@@ -42,7 +42,7 @@ keyboard_handler:
 start:
 	cli			; blocks interrupts
 	mov esp, stack_space
-	call main
+	call kmain
 	hlt 			; halt the cpu
 
 section .bss
