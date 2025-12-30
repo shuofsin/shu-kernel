@@ -36,4 +36,4 @@ unsigned char keyboard_map[128] = {
 	0, /* F11 */
 	0, /* F12 */
 	0, /* All other keys are undefined */
-}
+};

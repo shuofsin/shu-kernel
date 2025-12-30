@@ -16,7 +16,6 @@
 #define ENTER_KEY_CODE 0x1C
 
 #define COLOR 0x09
-;
 
 extern unsigned char keyboard_map[128];
 extern void keyboard_handler(void);
@@ -70,7 +69,7 @@ void idt_init(void) {
 	IDT[0x21].offset_lowerbits = keyboard_address & 0xffff;
 	IDT[0x21].selector = KERNEL_CODE_SEGMENT_OFFSET;
 	IDT[0x21].zero = 0;
-	IDT[0x31].type_attr = INTERRUPT_GATE;
+	IDT[0x21].type_attr = INTERRUPT_GATE;
 	IDT[0x21].offset_higherbits = (keyboard_address & 0xffff0000) >> 16;
 
 	// ICW1 begin init
@@ -81,7 +80,7 @@ void idt_init(void) {
 	// ICW2 remap offset
 	// in x86, the first 32 interrupts are reserved
 	write_port(0x21, 0x20);
-	write_port(0x21, 0x28);
+	write_port(0xA1, 0x28);
 
 	// ICW3 setup cascading
 	write_port(0x21, 0x00);
@@ -140,7 +139,7 @@ void keyboard_handler_main(void) {
 	
 	// Lowest bit of status will be set if buffer is not empty
 	if (status & 0x01) {
-		keycode = read_port(KEYBOARD_STATUS_PORT);
+		keycode = read_port(KEYBOARD_DATA_PORT);
 		if (keycode < 0)
 			return;
 
