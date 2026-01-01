@@ -15,6 +15,8 @@ global keyboard_handler
 global read_port
 global write_port
 global load_idt
+global disable_cursor
+global enable_cursor
 
 extern kmain			; defined in kernel.c
 extern keyboard_handler_main
@@ -45,6 +47,42 @@ start:
 	mov esp, stack_space
 	call kmain
 	hlt 			; halt the cpu
+
+disable_cursor:
+	pushf
+	push eax
+	push edx
+
+	mov dx, 0x3D4
+	mov al, 0xA 		; low cursor shape register
+	out dx, al
+
+	inc dx
+	mov al, 0x20		; bits 6-7 unused, bit 5 disables cursor, bits 0-4 control the cursor shape
+	out dx, al
+
+	pop edx
+	pop eax
+	popf
+	ret
+
+enable_cursor:
+	pushf
+	push eax
+	push edx
+	
+	mov dx, 0x3D4
+	mov al, 0xA		; low cursor shape register
+	out dx, al
+
+	inc dx
+	mov al, 0x0D		; bits 6-7 unused, bit 5 disables cursor, bits 0-4 control the cursor shape
+	out dx, al
+	
+	pop edx
+	pop eax
+	popf
+	ret
 
 section .bss
 resb 8192			; 8KB for stack pointer
