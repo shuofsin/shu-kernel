@@ -24,6 +24,7 @@ extern void write_port(unsigned short port, unsigned char data);
 extern void load_idt(unsigned long *idt_ptr);
 extern void disable_cursor(void);
 extern void enable_cursor(void);
+extern void update_cursor(int x, int y);
 
 unsigned int current_loc = 0;
 char *vidptr = (char*)0xB8000;
@@ -115,6 +116,7 @@ void kprint(const char *str) {
 		vidptr[current_loc++] = str[i++];
 		vidptr[current_loc++] = 0x09;
 	}
+	update_cursor(0, 0);
 }
 
 void kprint_newline(void) {
@@ -147,7 +149,6 @@ void keyboard_handler_main(void) {
 
 		if (keycode == ENTER_KEY_CODE) {
 			kprint_newline();
-			enable_cursor();
 			return;
 		}
 
@@ -155,8 +156,6 @@ void keyboard_handler_main(void) {
 		vidptr[current_loc++] = 0x09;
 	}
 }
-
-
 
 
 

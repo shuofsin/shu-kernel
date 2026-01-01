@@ -17,6 +17,7 @@ global write_port
 global load_idt
 global disable_cursor
 global enable_cursor
+global update_cursor
 
 extern kmain			; defined in kernel.c
 extern keyboard_handler_main
@@ -84,6 +85,32 @@ enable_cursor:
 	popf
 	ret
 
+update_cursor: 
+VGA.Width equ 80
+
+.SetCoords:
+	mov dl, VGA.Width
+	mul dl
+	add bx, ax
+
+.SetOffset:
+	mov dx, 0x03D4
+	mov al, 0x0F
+	out dx, al
+	
+	inc dl
+	mov al, bl
+	out dx, al
+	
+	dec dl
+	mov al, 0x0E
+	out dx, al
+	
+	inc dl
+	mov al, bh
+	out dx, al
+	ret
+	
 section .bss
 resb 8192			; 8KB for stack pointer
 stack_space:
