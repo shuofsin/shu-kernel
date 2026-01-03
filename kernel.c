@@ -24,7 +24,7 @@ extern void write_port(unsigned short port, unsigned char data);
 extern void load_idt(unsigned long *idt_ptr);
 extern void disable_cursor(void);
 extern void enable_cursor(void);
-extern void update_cursor(int x, int y);
+extern void set_cursor(unsigned short x, unsigned short y);
 
 unsigned int current_loc = 0;
 char *vidptr = (char*)0xB8000;
@@ -35,6 +35,7 @@ void kprint(const char *str);
 void kprint_newline(void);
 void clear_screen(void);
 void keyboard_handler_main(void);
+void update_cursor(void);
 
 // run the kernel
 void kmain(void) {
@@ -116,12 +117,13 @@ void kprint(const char *str) {
 		vidptr[current_loc++] = str[i++];
 		vidptr[current_loc++] = 0x09;
 	}
-	update_cursor(0, 0);
+	update_cursor();
 }
 
 void kprint_newline(void) {
 	unsigned int line_size = BYTES_FOR_EACH_ELEMENT * COLUMNS_IN_LINE;
 	current_loc = current_loc + (line_size - current_loc % (line_size));
+	update_cursor();
 }
 
 void clear_screen(void) {
@@ -154,10 +156,13 @@ void keyboard_handler_main(void) {
 
 		vidptr[current_loc++] = keyboard_map[(unsigned char) keycode];
 		vidptr[current_loc++] = 0x09;
+		update_cursor();
 	}
 }
 
-
+void update_cursor(void) {
+	set_cursor((unsigned short)((current_loc / 2) % 80), (unsigned short)((current_loc / 2) / 80));
+}
 
 
 

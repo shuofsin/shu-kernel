@@ -1,3 +1,3 @@
 ## Shu Kernel
 
-Created following guide @ arjunsreedharan.org
+Basic functionality created using guide(s) found @ arjunsreedharan.org

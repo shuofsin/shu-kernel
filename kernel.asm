@@ -17,7 +17,7 @@ global write_port
 global load_idt
 global disable_cursor
 global enable_cursor
-global update_cursor
+global set_cursor
 
 extern kmain			; defined in kernel.c
 extern keyboard_handler_main
@@ -85,8 +85,12 @@ enable_cursor:
 	popf
 	ret
 
-update_cursor: 
+set_cursor: 
 VGA.Width equ 80
+
+.GetCoords:
+	mov bx, [esp + 4]
+	mov ax, [esp + 4 + 4]
 
 .SetCoords:
 	mov dl, VGA.Width
@@ -94,14 +98,14 @@ VGA.Width equ 80
 	add bx, ax
 
 .SetOffset:
-	mov dx, 0x03D4
+	mov dx, 0x3D4
 	mov al, 0x0F
 	out dx, al
 	
 	inc dl
 	mov al, bl
 	out dx, al
-	
+
 	dec dl
 	mov al, 0x0E
 	out dx, al
